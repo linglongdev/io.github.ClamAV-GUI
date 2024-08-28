@@ -1,0 +1,32 @@
+version: "1"
+
+package:
+  id: io.github.ClamAV-GUI
+  name: ClamAV-GUI
+  version: 0.0.5.1
+  kind: app
+  description: |
+    Front-End for ClamAV
+
+command:
+  - /opt/apps/io.github.ClamAV-GUI/files/bin/clamav-gui
+
+base: org.deepin.foundation/23.0.0
+runtime: org.deepin.Runtime/23.0.1
+
+sources:
+  - kind: git
+    url: https://github.com/wusel1007/ClamAV-GUI.git
+    version: master
+    commit: 6b6e0f85cafea3948afbd7aa2f613591874dafc8
+  - kind: file
+    url: http://security.debian.org/debian-security/pool/updates/main/c/clamav/clamav-freshclam_0.103.9+dfsg-0+deb10u1_amd64.deb
+    digest: 1ef8282ae7d43913360ef80f3fc39e82e9896642aafbc741d21efa8498dcca7f
+build: |
+  bash ./install_dep linglong/sources $PREFIX
+
+  cd /project/linglong/sources/ClamAV-GUI.git
+  git apply ../../../0001-install.patch
+  qmake -makefile PREFIX=${PREFIX} LIB_INSTALL_DIR=${PREFIX}/lib/${TRIPLET}
+  make -j$(nproc)
+  make install
